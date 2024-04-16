@@ -19,7 +19,7 @@ class Transformer implements TransformerInterface
     private $namespacePrefix;
 
     /**
-     * @var array
+     * @var string
      */
     private $namespaceExcludes;
 
@@ -34,7 +34,7 @@ class Transformer implements TransformerInterface
     {
         $this->namespacePrefix = StringUtil::ensureDoubleBackwardSlash($namespacePrefix);
         $this->filesystem = $filesystem;
-        $this->namespaceExcludes = $namespaceExcludes;
+        $this->namespaceExcludes = implode('|', $namespaceExcludes);
     }
 
     /**
@@ -84,9 +84,10 @@ class Transformer implements TransformerInterface
     private function prefixNamespace(string $targetFile)
     {
         $pattern = sprintf(
-            '/(\s+)%1$s\\s+(?!(%2$s)|(Composer(\\\\|;)))/',
+            '/(\s+)%1$s\\s+(?!(%2$s)|((%3$s)(\\\\|;)))/',
             'namespace',
-            $this->namespacePrefix
+            $this->namespacePrefix,
+            $this->namespaceExcludes
         );
         $replacement = sprintf('%1$s %2$s', '${1}namespace', $this->namespacePrefix);
 
@@ -124,9 +125,10 @@ class Transformer implements TransformerInterface
     private function prefixUseConst(string $targetFile)
     {
         $pattern = sprintf(
-            '/%1$s\\s+(?!(%2$s)|(\\\\(?!.*\\\\.*))|(Composer(\\\\|;)|(?!.*\\\\.*)))/',
+            '/%1$s\\s+(?!(%2$s)|(\\\\(?!.*\\\\.*))|((%3$s)(\\\\|;)|(?!.*\\\\.*)))/',
             'use const',
-            $this->namespacePrefix
+            $this->namespacePrefix,
+            $this->namespaceExcludes
         );
         $replacement = sprintf('%1$s %2$s', 'use const', $this->namespacePrefix);
 
@@ -143,9 +145,10 @@ class Transformer implements TransformerInterface
     private function prefixUseFunction(string $targetFile)
     {
         $pattern = sprintf(
-            '/%1$s\\s+(?!(%2$s)|(\\\\(?!.*\\\\.*))|(Composer(\\\\|;)|(?!.*\\\\.*)))/',
+            '/%1$s\\s+(?!(%2$s)|(\\\\(?!.*\\\\.*))|((%3$s)(\\\\|;)|(?!.*\\\\.*)))/',
             'use function',
-            $this->namespacePrefix
+            $this->namespacePrefix,
+            $this->namespaceExcludes
         );
         $replacement = sprintf('%1$s %2$s', 'use function', $this->namespacePrefix);
 
@@ -165,7 +168,7 @@ class Transformer implements TransformerInterface
             '/%1$s\\s+(?!(const)|(function)|(%2$s)|(\\\\(?!.*\\\\.*))|((%3$s)(\\\\|;)|(?!.*\\\\.*)))/',
             'use',
             $this->namespacePrefix,
-            implode('|', $this->namespaceExcludes)
+            $this->namespaceExcludes
         );
         $replacement = sprintf('%1$s %2$s', 'use', $this->namespacePrefix);
 
