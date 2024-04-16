@@ -19,15 +19,22 @@ class Transformer implements TransformerInterface
     private $namespacePrefix;
 
     /**
+     * @var array
+     */
+    private $namespaceExcludes;
+
+    /**
      * Transformer constructor.
      *
      * @param string              $namespacePrefix
      * @param FilesystemInterface $filesystem
+     * @param array               $namespaceExcludes
      */
-    public function __construct(string $namespacePrefix, FilesystemInterface $filesystem)
+    public function __construct(string $namespacePrefix, FilesystemInterface $filesystem, array $namespaceExcludes)
     {
         $this->namespacePrefix = StringUtil::ensureDoubleBackwardSlash($namespacePrefix);
         $this->filesystem = $filesystem;
+        $this->namespaceExcludes = $namespaceExcludes;
     }
 
     /**
@@ -155,9 +162,10 @@ class Transformer implements TransformerInterface
     private function prefixUse(string $targetFile)
     {
         $pattern = sprintf(
-            '/%1$s\\s+(?!(const)|(function)|(%2$s)|(\\\\(?!.*\\\\.*))|(Composer(\\\\|;)|(?!.*\\\\.*)))/',
+            '/%1$s\\s+(?!(const)|(function)|(%2$s)|(\\\\(?!.*\\\\.*))|((%3$s)(\\\\|;)|(?!.*\\\\.*)))/',
             'use',
-            $this->namespacePrefix
+            $this->namespacePrefix,
+            implode('|', $this->namespaceExcludes)
         );
         $replacement = sprintf('%1$s %2$s', 'use', $this->namespacePrefix);
 

@@ -74,6 +74,10 @@ In your `composer.json`:
         "namespace": "My\\App\\Vendor",
         "excludes": [
             "dummy/dummy-excluded"
+        ],
+        "namespaceExcludes": [
+            "GuzzleHttp",
+            "Symfony\\\\Component"
         ]
     }
 }
@@ -92,6 +96,14 @@ This is the namespace prefix to be added to vendor packages.
 Vendor packages which needs to be excluded from namespace prefixing.
 All [composer-made packages](https://packagist.org/packages/composer/) are excluded by default.
 Besides, anything under the `Composer` namespace will be excluded.
+
+### extra.imposter.namespaceExcludes
+
+*Optional* Array of strings
+
+Vendor namespaces which needs to be excluded from namespace prefixing in `use` import statements.
+Anything under the `Composer` namespace is automatically excluded by default.
+**Make sure to double escape backslashes, such as `"Symfony\\\\Component"`**
 
 ## Usage
 

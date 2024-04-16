@@ -16,7 +16,19 @@ class ProjectConfig extends Config implements ProjectConfigInterface
     /**
      * @var string[]
      */
+    protected const DEFAULT_NAMESPACE_EXCLUDES = [
+        'Composer',
+    ];
+
+    /**
+     * @var string[]
+     */
     private $extraExcludes = [];
+
+    /**
+     * @var string[]
+     */
+    private $extraNamespaceExcludes = [];
 
     /**
      * @return string[]
@@ -27,6 +39,17 @@ class ProjectConfig extends Config implements ProjectConfigInterface
         $excludes = $extra['imposter']['excludes'] ?? [];
 
         return array_merge(static::DEFAULT_EXCLUDES, $excludes, $this->extraExcludes);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getNamespaceExcludes(): array
+    {
+        $extra = $this->get('extra');
+        $excludes = $extra['imposter']['namespaceExcludes'] ?? [];
+
+        return array_merge(static::DEFAULT_NAMESPACE_EXCLUDES, $excludes, $this->extraNamespaceExcludes);
     }
 
     public function getImposterNamespace(): string

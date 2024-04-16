@@ -11,6 +11,11 @@ interface ProjectConfigInterface extends ConfigInterface
      */
     public function getExcludes(): array;
 
+    /**
+     * @return string[]
+     */
+    public function getNamespaceExcludes(): array;
+
     public function getImposterNamespace(): string;
 
     public function getVendorDir(): string;
